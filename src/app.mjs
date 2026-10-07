@@ -3,8 +3,12 @@ const p=JSON.parse(document.getElementById('page-data').textContent);const {lang
 const form=document.getElementById('calculator');let country;
 const read=()=>{try{return localStorage.getItem('cleanmargin.country')}catch{return null}};
 const save=c=>{try{localStorage.setItem('cleanmargin.country',c)}catch{}};
-function detect(){for(const l of navigator.languages||[navigator.language]){try{const r=new Intl.Locale(l).region;if(countries[r])return r}catch{}}return {en:'GB',de:'DE',fr:'FR',es:'ES',it:'IT',nl:'NL'}[lang]||'GB'}
-country=countries[read()]?read():detect();const selector=document.getElementById('country');if(selector){selector.value=country;selector.addEventListener('change',()=>{country=selector.value;save(country);render()})}
+country=countries[read()]?read():'US';
+const selector=document.getElementById('country');
+if(selector){selector.value=country;selector.addEventListener('change',()=>{country=selector.value;save(country);render()})}
+// Country comes from the same-origin edge endpoint, not a third-party IP service.
+const geoAbort=new AbortController();const geoTimer=setTimeout(()=>geoAbort.abort(),2000);
+if(!countries[read()])fetch('/api/region',{signal:geoAbort.signal,cache:'no-store',credentials:'omit'}).then(r=>{if(!r.ok)throw Error('Unavailable');return r.json()}).then(r=>{if(!countries[read()]&&countries[r.country]&&countries[r.country]===r.currency){country=r.country;if(selector)selector.value=country;render()}}).catch(()=>{}).finally(()=>clearTimeout(geoTimer));
 document.getElementById('language')?.addEventListener('change',e=>{location.href=`/${e.target.value}/${route}`});
 document.getElementById('preferences')?.addEventListener('click',()=>{try{localStorage.removeItem('cleanmargin.country')}catch{} location.reload()});
 const money=n=>new Intl.NumberFormat(lang,{style:'currency',currency:countries[country]}).format(n);

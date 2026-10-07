@@ -6,9 +6,9 @@ Commercial cleaning planning tools. Dependency-free, pre-rendered static HTML in
 
 Requires Node 20+. `npm run build`, `npm test`, then `npm start`. Open http://127.0.0.1:4173/en/.
 
-`SITE_URL` sets the canonical HTTPS origin when building. Deploy `dist/` to static hosting. The root is a language selector; localized URLs remain accessible without redirects. Six complete language versions, canonical tags, reciprocal hreflang, structured data, robots.txt and sitemap.xml are generated.
+`SITE_URL` sets the canonical HTTPS origin when building. Without it, preview builds are noindex and use example.com placeholders. See LAUNCH.md for hosting, geo behavior and owner details. Deploy `dist/` to static hosting. The root is a language selector; localized URLs remain accessible without redirects. Six complete language versions, canonical tags, reciprocal hreflang, structured data, robots.txt and sitemap.xml are generated.
 
-Country is inferred from a supported region in browser language preferences, not IP geolocation. A manual country selector persists locally. Currency denomination changes do not convert amounts or apply tax law. Calculations never leave the browser. No external fonts, analytics or ad requests.
+Country is inferred from trusted Cloudflare IP metadata through Pages Functions. Missing or unsupported countries fall back to English and USD. Explicit language URLs remain stable. A manual country selector persists locally. Currency denomination changes do not convert amounts or apply tax law. Calculations never leave the browser. No external fonts, analytics or ad requests.
 
 ## Calculation
 
@@ -20,7 +20,7 @@ Cost = (cleaning hours + paid travel/setup hours) × crew × wage × (1 + burden
 - Have native speakers review translations and an experienced cleaning owner check the assumptions.
 - Use your public canonical origin; rebuild and submit sitemap in Search Console. SEO setup does not guarantee indexing/rankings.
 - Confirm hosting security headers and real 404 status on your chosen provider.
-- Actual location inference can be added via the host's country header, with browser fallback and manual override. Do not confuse browser region with physical location.
+- IP detection is implemented for Cloudflare Pages; verify it on the final host. Other hosts need an adapter. IP estimates can be inaccurate with VPNs.
 
 ## Advertising integration
 
